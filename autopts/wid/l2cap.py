@@ -474,11 +474,13 @@ def hdl_wid_254(_: WIDParams):
     return get_stack().l2cap.wait_for_disconnection(0, 30)
 
 
-def hdl_wid_255(_: WIDParams):
+def hdl_wid_255(params: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
-
-    btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, l2cap.num_channels, 1, l2cap.hold_credits)
+    if params.test_case_name.startswith('L2CAP/TIM'):
+        btp.l2cap_connect_eatt_chans(None, None, 1)
+    else:
+        btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, l2cap.num_channels, 1, l2cap.hold_credits)
     return True
 
 

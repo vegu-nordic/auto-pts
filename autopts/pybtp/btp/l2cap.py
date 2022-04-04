@@ -41,6 +41,9 @@ L2CAP = {
                     CONTROLLER_INDEX),
     "disconnect_eatt_chans": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_DISCONNECT_EATT_CHANS,
                               CONTROLLER_INDEX),
+
+    "connect_eatt_chans": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT_EATT_CHANS,
+                              CONTROLLER_INDEX),
     "credits": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CREDITS,
                 CONTROLLER_INDEX),
 }
@@ -186,6 +189,22 @@ def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
 
     l2cap_command_rsp_succ(defs.L2CAP_DISCONNECT_EATT_CHANS)
 
+def l2cap_connect_eatt_chans(bd_addr, bd_addr_type, channel_count):
+    logging.debug("%s %r", l2cap_connect_eatt_chans.__name__, channel_count)
+
+    iutctl = get_iut()
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(bytearray(chr(channel_count).encode('utf-8')))
+
+    iutctl.btp_socket.send(*L2CAP['connect_eatt_chans'], data=data_ba)
+
+    l2cap_command_rsp_succ(defs.L2CAP_CONNECT_EATT_CHANS)
 
 def l2cap_le_listen(psm, mtu=0, response=0):
     l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE, mtu, response)
